@@ -32,7 +32,6 @@ pub struct GPIO {
 }
 
 impl GPIO {
-	#[link_section = ".fastrun"]
 	pub fn new(id: usize) -> &'static mut Self {
 		unsafe {
 			match id {
@@ -44,11 +43,8 @@ impl GPIO {
 		}
 	}
 
-	#[link_section = ".fastrun"]
-	#[inline(always)]
 	fn get_pin_mask(pin: usize) -> u32 { return 1 << pin; }
 
-	#[link_section = ".fastrun"]
 	pub fn set_pin_state(&mut self, pin: usize, state: bool) {
 		unsafe {
 			let mask = GPIO::get_pin_mask(pin);
@@ -61,7 +57,6 @@ impl GPIO {
 		}
 	}
 
-	#[link_section = ".fastrun"]
 	pub fn get_pin_state(&mut self, pin: usize) -> bool {
 		unsafe {
 			let mask = GPIO::get_pin_mask(pin);
@@ -72,7 +67,6 @@ impl GPIO {
 		}
 	}
 
-	#[link_section = ".fastrun"]
 	pub fn set_pin_output(&mut self, pin: usize, is_output: bool) {
 		unsafe {
 			let mask = GPIO::get_pin_mask(pin);
@@ -83,7 +77,6 @@ impl GPIO {
 		}
 	}
 
-	#[link_section = ".fastrun"]
 	pub fn is_pin_output(&mut self, pin: usize) -> bool {
 		unsafe {
 			let mask = GPIO::get_pin_mask(pin);
@@ -94,7 +87,6 @@ impl GPIO {
 		}
 	}
 
-	#[link_section = ".fastrun"]
 	pub fn get_pin_pad_status(&mut self, pin: usize) -> bool {
 		unsafe {
 			let mask = GPIO::get_pin_mask(pin);
@@ -105,7 +97,6 @@ impl GPIO {
 		}
 	}
 
-	#[link_section = ".fastrun"]
 	pub fn set_pin_interrupt_configuration(&mut self, pin: usize, config: InterruptConfiguration) {
 		unsafe {
 			let val: u32;
@@ -130,7 +121,6 @@ impl GPIO {
 		}
 	}
 
-	#[link_section = ".fastrun"]
 	pub fn get_pin_interrupt_configuration(&mut self, pin: usize) -> InterruptConfiguration {
 		unsafe {
 			let val: u32;
@@ -154,7 +144,6 @@ impl GPIO {
 		}
 	}
 
-	#[link_section = ".fastrun"]
 	pub fn set_pin_interrupt_enabled(&mut self, pin: usize, enabled: bool) {
 		unsafe {
 			let mask: u32 = GPIO::get_pin_mask(pin);
@@ -165,7 +154,6 @@ impl GPIO {
 		}
 	}
 
-	#[link_section = ".fastrun"]
 	pub fn get_pin_interrupt_enabled(&mut self, pin: usize) -> bool {
 		unsafe {
 			let mask: u32 = GPIO::get_pin_mask(pin);
@@ -176,7 +164,6 @@ impl GPIO {
 		}
 	}
 
-	#[link_section = ".fastrun"]
 	pub fn get_pin_interrupt_state(&mut self, pin: usize) -> bool {
 		unsafe {
 			let mask: u32 = GPIO::get_pin_mask(pin);
@@ -187,7 +174,6 @@ impl GPIO {
 		}
 	}
 
-	#[link_section = ".fastrun"]
 	pub fn clear_pin_interrupt_state(&mut self, pin: usize) {
 		unsafe {
 			let mask: u32 = GPIO::get_pin_mask(pin);
@@ -195,7 +181,6 @@ impl GPIO {
 		}
 	}
 
-	#[link_section = ".fastrun"]
 	pub fn set_pin_interrupt_edge_select_enabled(&mut self, pin: usize, enabled: bool) {
 		unsafe {
 			let mask: u32 = GPIO::get_pin_mask(pin);
@@ -205,8 +190,7 @@ impl GPIO {
 			}
 		}
 	}
-
-	#[link_section = ".fastrun"]
+	
 	pub fn get_pin_interrupt_edge_select_enabled(&mut self, pin: usize) -> bool {
 		unsafe {
 			let mask: u32 = GPIO::get_pin_mask(pin);

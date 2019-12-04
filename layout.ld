@@ -69,14 +69,17 @@ SECTIONS
 
 	_TEXT_START = ADDR(.text.itcm);
 	_TEXT_END = ADDR(.text.itcm) + SIZEOF(.text.itcm);
+	_TEXT_LEN = SIZEOF(.text.itcm);
 	_TEXT_LOAD = LOADADDR(.text.itcm);
 	
 	_DATA_START = ADDR(.data);
 	_DATA_END = ADDR(.data) + SIZEOF(.data);
+	_DATA_LEN = SIZEOF(.data);
 	_DATA_LOAD = LOADADDR(.data);
 
 	_BSS_START = ADDR(.bss);
 	_BSS_END = ADDR(.bss) + SIZEOF(.bss);
+	_BSS_LEN = SIZEOF(.bss);
 
 	/* Defined here to avoid rough casting in Rust */
 	_INITIAL_STACK = 0x20010000;

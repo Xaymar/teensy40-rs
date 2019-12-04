@@ -28,4 +28,4 @@ trailing_comma = "Vertical"
 match_block_trailing_comma = true
 match_arm_blocks = true
 merge_imports = false
-normalize_comments = true
+normalize_comments = false

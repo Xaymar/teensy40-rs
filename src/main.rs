@@ -10,7 +10,7 @@
 mod teensy40;
 
 #[no_mangle]
-pub extern "C" fn main() { loop {} }
+pub extern "C" fn main() {}
 
 #[panic_handler]
 fn teensy_panic(_: &core::panic::PanicInfo) -> ! { loop {} }
