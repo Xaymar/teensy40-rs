@@ -1,5 +1,6 @@
 use super::cm7;
 use super::iomuxc;
+use super::ccm;
 use core::mem::transmute;
 
 extern "C" {
@@ -74,8 +75,39 @@ pub unsafe extern "C" fn startup() {
 	memcpy_u32(transmute(&_DATA_START), transmute(&_DATA_LOAD), transmute(&_DATA_END));
 	memset_u32(transmute(&_BSS_START), transmute(&_BSS_END), 0);
 
-	// Initialize Cortex-M7
-	cm7::initialize();
+	// Enable FPU
+	cm7::fpu::enable();
+
+	// Cortex-M7: Initialize NVIC
+	cm7::nvic::initialize();
+
+	// Configure Clocks
+	// CCM Setup for PIZ & GPT
+	(*ccm::CSCMR1).write(((*ccm::CSCMR1).read() & !0b11_1111) | (1 << 6));
+	// CCM Setup for UART Clock
+	(*ccm::CSCDR1).write(((*ccm::CSCDR1).read() & !0b11_1111) | (1 << 6));
+	
+	// Only on IMXRT1062
+	{
+		// Arduino code claims "fast GPIO6, GPIO7, GPIO8, GPIO9".
+		// All this does is toggle between GPIO1/GPIO6, etc.
+		(*iomuxc::GPR26).write(0xFFFF_FFFF);
+		(*iomuxc::GPR27).write(0xFFFF_FFFF);
+		(*iomuxc::GPR28).write(0xFFFF_FFFF);
+		(*iomuxc::GPR29).write(0xFFFF_FFFF);
+	}
+
+	// Cortex-M7: Configure MPU
+	cm7::mpu::disable();
+	cm7::mpu::disable_during_hardfault();
+	cm7::mpu::enable_privileged_default_access();
+
+	// Cortex-M7: Enable L1 Cache
+	cm7::cache::enable();
+
+
+
+
 
 	// super::ccm::Ccm::new().sanitize();
 	main();

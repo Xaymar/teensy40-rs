@@ -28,7 +28,7 @@ SECTIONS
                 KEEP (*(.init_array))
                 __init_array_end = .;
 		. = ALIGN(16);
-	} > FLASH
+	} > FLASH	
 
 	.text.itcm : {
 		. = . + 32; /* MPU to trap NULL pointer deref */
@@ -46,6 +46,8 @@ SECTIONS
 	.bss ALIGN(4) : {
 		*(.bss*)
 		*(COMMON)
+		. = ALIGN(64);
+		*(.interrupt)
 		. = ALIGN(32);
 		. = . + 32; /* MPU to trap stack overflow */
 	} > DTCM

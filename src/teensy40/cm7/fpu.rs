@@ -6,8 +6,12 @@ use super::scb;
 
 #[link_section = ".fastrun"]
 #[inline(always)]
-pub unsafe fn initialize() {
-	if ((*scb::PID0).read() & 0b1100) == 0b1100 {
-		(*scb::CPACR).write((*scb::CPACR).read() | 0b0000_0000_1111_0000_0000_0000_0000_0000);
-	}
+pub unsafe fn enable() {
+	(*scb::CPACR).write((*scb::CPACR).read() | 0b00000000_11110000_00000000_00000000);
+}
+
+#[link_section = ".fastrun"]
+#[inline(always)]
+pub unsafe fn disable() {
+	(*scb::CPACR).write((*scb::CPACR).read() & !0b00000000_11110000_00000000_00000000);
 }

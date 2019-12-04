@@ -1,16 +1,8 @@
 #![allow(dead_code)]
 
+use super::scb;
 use volatile::ReadOnly;
 use volatile::Volatile;
-
-// SysTick Control and Status Register
-const SYST_CSR: *mut Volatile<u32> = (0xE000_E010) as *mut Volatile<u32>;
-// SysTick Reload Value Register
-const SYST_RVR: *mut Volatile<u32> = (0xE000_E014) as *mut Volatile<u32>;
-// SysTick Current Value Register
-const SYST_CVR: *mut Volatile<u32> = (0xE000_E018) as *mut Volatile<u32>;
-// SysTick Calibration Value Register
-const SYST_CALIB: *mut ReadOnly<u32> = (0xE000_E01C) as *mut ReadOnly<u32>;
 
 pub struct SysTick {
 	control_and_status: Volatile<u32>,
@@ -31,26 +23,26 @@ impl SysTick {
 
 	#[link_section = ".fastrun"]
 	#[inline(always)]
-	pub fn enable() { unsafe { (*SYST_CSR).write((*SYST_CSR).read() | 0b1) }; }
+	pub fn enable() { unsafe { (*scb::SYST_CSR).write((*scb::SYST_CSR).read() | 0b1) }; }
 
 	#[link_section = ".fastrun"]
 	#[inline(always)]
-	pub fn disable() { unsafe { (*SYST_CSR).write((*SYST_CSR).read() & !0b1) }; }
+	pub fn disable() { unsafe { (*scb::SYST_CSR).write((*scb::SYST_CSR).read() & !0b1) }; }
 
 	#[link_section = ".fastrun"]
 	#[inline(always)]
-	pub fn enable_exception() { unsafe { (*SYST_CSR).write((*SYST_CSR).read() | 0b10) }; }
+	pub fn enable_exception() { unsafe { (*scb::SYST_CSR).write((*scb::SYST_CSR).read() | 0b10) }; }
 
 	#[link_section = ".fastrun"]
 	#[inline(always)]
-	pub fn disable_exception() { unsafe { (*SYST_CSR).write((*SYST_CSR).read() & !0b10) }; }
+	pub fn disable_exception() { unsafe { (*scb::SYST_CSR).write((*scb::SYST_CSR).read() & !0b10) }; }
 
 	#[link_section = ".fastrun"]
 	#[inline(always)]
 	pub fn set_clock_source(source: ClockSource) {
 		match source {
-			ClockSource::EXTERNAL => unsafe { (*SYST_CSR).write((*SYST_CSR).read() & !0b100) },
-			ClockSource::INTERNAL => unsafe { (*SYST_CSR).write((*SYST_CSR).read() | 0b100) },
+			ClockSource::EXTERNAL => unsafe { (*scb::SYST_CSR).write((*scb::SYST_CSR).read() & !0b100) },
+			ClockSource::INTERNAL => unsafe { (*scb::SYST_CSR).write((*scb::SYST_CSR).read() | 0b100) },
 		}
 	}
 
@@ -58,7 +50,7 @@ impl SysTick {
 	#[inline(always)]
 	pub fn get_clock_source() -> ClockSource {
 		unsafe {
-			match ((*SYST_CSR).read() & 0b100) != 0 {
+			match ((*scb::SYST_CSR).read() & 0b100) != 0 {
 				false => ClockSource::EXTERNAL,
 				true => ClockSource::INTERNAL,
 			}
@@ -69,7 +61,7 @@ impl SysTick {
 	#[inline(always)]
 	pub fn has_ticked() -> bool {
 		unsafe {
-			return ((*SYST_CSR).read() & 0x10000) != 0;
+			return ((*scb::SYST_CSR).read() & 0x10000) != 0;
 		}
 	}
 
@@ -77,7 +69,7 @@ impl SysTick {
 	#[inline(always)]
 	pub fn has_reference_clock() -> bool {
 		unsafe {
-			return ((*SYST_CALIB).read() & 0x80000000) != 0;
+			return ((*scb::SYST_CALIB).read() & 0x80000000) != 0;
 		}
 	}
 
@@ -85,7 +77,7 @@ impl SysTick {
 	#[inline(always)]
 	pub fn is_10ms_skewed() -> bool {
 		unsafe {
-			return ((*SYST_CALIB).read() & 0x40000000) != 0;
+			return ((*scb::SYST_CALIB).read() & 0x40000000) != 0;
 		}
 	}
 
@@ -93,7 +85,7 @@ impl SysTick {
 	#[inline(always)]
 	pub fn get_10ms_tick_count() -> u32 {
 		unsafe {
-			return (*SYST_CALIB).read() & 0xFFFFFF;
+			return (*scb::SYST_CALIB).read() & 0xFFFFFF;
 		}
 	}
 }

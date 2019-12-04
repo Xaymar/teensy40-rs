@@ -6,8 +6,17 @@ use volatile::ReadOnly;
 use volatile::Volatile;
 use volatile::WriteOnly;
 
-// Coprocessor Access Control Register
+// Auxiliary Control Register
 pub const ACTLR: *mut Volatile<u32> = (0xE000_E008) as *mut Volatile<u32>;
+
+// SysTick Control and Status Register
+pub const SYST_CSR: *mut Volatile<u32> = (0xE000_E010) as *mut Volatile<u32>;
+// SysTick Reload Value Register
+pub const SYST_RVR: *mut Volatile<u32> = (0xE000_E014) as *mut Volatile<u32>;
+// SysTick Current Value Register
+pub const SYST_CVR: *mut Volatile<u32> = (0xE000_E018) as *mut Volatile<u32>;
+// SysTick Calibration Value Register
+pub const SYST_CALIB: *mut ReadOnly<u32> = (0xE000_E01C) as *mut ReadOnly<u32>;
 
 // CPUID Base Register
 pub const CPUID: *mut ReadOnly<u32> = (0xE000_ED00) as *mut ReadOnly<u32>;

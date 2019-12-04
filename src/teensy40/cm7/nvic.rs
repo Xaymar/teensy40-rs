@@ -26,7 +26,8 @@ const IPR_BASE: u32 = 0xE000_E400;
 const ICTR: *mut ReadOnly<u32> = (0xE000_E004) as *mut ReadOnly<u32>; // Interrupt Controller Type Register
 const VTOR: *mut Volatile<u32> = (0xE000_ED08) as *mut Volatile<u32>; // Vector Table Offset Register
 
-// Global Interrupt Table
+// Global Interrupt Table (aligned by linker to 64 bytes)
+#[link_section = ".interrupt"]
 static mut _INTERRUPTS: [Option<&unsafe extern "C" fn()>; 256] = [None; 256];
 
 #[link_section = ".fastrun"]
