@@ -2,6 +2,7 @@ use super::cm7;
 use super::iomuxc;
 use super::ccm;
 use core::mem::transmute;
+use super::gpio::*;
 
 extern "C" {
 	static _FLEXRAM_BANK_CONFIG: u32;
@@ -69,6 +70,15 @@ pub unsafe extern "C" fn startup() {
 		// Set up new Stack Pointer
 		asm!("mov sp, $0" : : "r"(&_STACK_END));
 	}
+
+	// Turn on Debug LED
+	(*iomuxc::SW_MUX_CTL_PAD_GPIO_B0_03).write(5);
+	(*iomuxc::SW_PAD_CTL_PAD_GPIO_B0_03).write(0b111 << 3);
+	(*iomuxc::GPR27).write(0xFFFF_FFFF);
+	let gpio7 = GPIO::new(6);
+	gpio7.set_pin_interrupt_enabled(2, false);
+	gpio7.set_pin_output(2, true);
+	gpio7.set_pin_state(2, true);
 
 	// Initialize Memory
 	memcpy_u32(transmute(&_TEXT_START), transmute(&_TEXT_LOAD), transmute(&_TEXT_END));

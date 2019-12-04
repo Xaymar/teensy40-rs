@@ -2,7 +2,6 @@
 
 // 4.6 Operational Memory Protection Unit
 
-use core::mem::transmute;
 use volatile::*;
 
 pub const TYPE: *mut ReadOnly<u32> = (0xE000_ED90) as *mut ReadOnly<u32>;
