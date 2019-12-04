@@ -25,10 +25,10 @@ pub struct GPIO {
 	interrupt_mask: Volatile<u32>,
 	interrupt_status: Volatile<u32>,
 	interrupt_edge_selection: Volatile<u32>,
-	/* 	_pad0: [u8; 100],
-	 * 	DR_SET: WriteOnly<u32>,
-	 * 	DR_CLEAR: WriteOnly<u32>,
-	 * 	DR_TOGGLE: WriteOnly<u32>, */
+	_pad0: [u8; 100],
+	data_set: WriteOnly<u32>,
+	data_clear: WriteOnly<u32>,
+	data_toggle: WriteOnly<u32>,
 }
 
 impl GPIO {
@@ -53,8 +53,10 @@ impl GPIO {
 		unsafe {
 			let mask = GPIO::get_pin_mask(pin);
 			match state {
-				false => self.data.write(self.data.read() & !mask),
-				true => self.data.write(self.data.read() | mask),
+				// false => self.data.write(self.data.read() & !mask),
+				// true => self.data.write(self.data.read() | mask),
+				false => self.data_clear.write(mask),
+				true => self.data_set.write(mask),
 			}
 		}
 	}

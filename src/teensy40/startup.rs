@@ -71,20 +71,24 @@ pub unsafe extern "C" fn startup() {
 		asm!("mov sp, $0" : : "r"(&_STACK_END));
 	}
 
+	// Initialize Memory
+	memcpy_u32(transmute(&_TEXT_START), transmute(&_TEXT_LOAD), transmute(&_TEXT_END));
+	memcpy_u32(transmute(&_DATA_START), transmute(&_DATA_LOAD), transmute(&_DATA_END));
+	memset_u32(transmute(&_BSS_START), transmute(&_BSS_END), 0);	
+
 	// Turn on Debug LED
 	(*iomuxc::SW_MUX_CTL_PAD_GPIO_B0_03).write(5);
 	(*iomuxc::SW_PAD_CTL_PAD_GPIO_B0_03).write(0b111 << 3);
 	(*iomuxc::GPR27).write(0xFFFF_FFFF);
-	let gpio7 = GPIO::new(6);
-	gpio7.set_pin_interrupt_enabled(2, false);
-	gpio7.set_pin_output(2, true);
-	gpio7.set_pin_state(2, true);
-
-	// Initialize Memory
-	memcpy_u32(transmute(&_TEXT_START), transmute(&_TEXT_LOAD), transmute(&_TEXT_END));
-	memcpy_u32(transmute(&_DATA_START), transmute(&_DATA_LOAD), transmute(&_DATA_END));
-	memset_u32(transmute(&_BSS_START), transmute(&_BSS_END), 0);
-
+	for gpio in 0..super::gpio::COUNT {
+		let g = GPIO::new(gpio);
+		for pin in 0..super::gpio::COUNT_PIN {
+			g.set_pin_interrupt_enabled(pin, false);
+			g.set_pin_output(pin, true);
+			g.set_pin_state(pin, true);
+		}
+	}
+	
 	// Enable FPU
 	cm7::fpu::enable();
 
@@ -165,8 +169,8 @@ pub unsafe extern "C" fn startup() {
 
 	// Cortex-M7: Configure SysTick
 
-
-
 	// super::ccm::Ccm::new().sanitize();
-	main();
+	loop {
+		main();
+	}
 }

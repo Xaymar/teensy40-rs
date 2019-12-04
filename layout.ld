@@ -78,7 +78,9 @@ SECTIONS
 	_BSS_START = ADDR(.bss);
 	_BSS_END = ADDR(.bss) + SIZEOF(.bss);
 
-	
+	/* Defined here to avoid rough casting in Rust */
+	_INITIAL_STACK = 0x20010000;
+
 	/* From Teensyduino */
 	_heap_start = ADDR(.bss.dma) + SIZEOF(.bss.dma);
 	_heap_end = ORIGIN(RAM) + LENGTH(RAM);
