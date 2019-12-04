@@ -98,14 +98,62 @@ pub unsafe extern "C" fn startup() {
 	}
 
 	// Cortex-M7: Configure MPU
-	cm7::mpu::disable();
-	cm7::mpu::disable_during_hardfault();
-	cm7::mpu::enable_privileged_default_access();
+	cm7::mpu::initialize();
+	// ITCM: No Cache, ReadWrite All, 512KB
+	cm7::mpu::set_region_address(0, 0x0000_0000);
+	cm7::mpu::set_region_access(true, cm7::mpu::AccessPermissions::ReadWrite, cm7::mpu::AccessPermissions::ReadWrite);
+	cm7::mpu::set_region_custom_attributes(cm7::mpu::CachePolicy::None, cm7::mpu::CachePolicy::None);
+	cm7::mpu::set_region_shareable(false);
+	cm7::mpu::set_region_size(cm7::mpu::SIZE_512KB);
+	// Boot ROM: Write Through, ReadOnly, 128KB
+	cm7::mpu::set_region_address(1, 0x0020_0000);
+	cm7::mpu::set_region_access(true, cm7::mpu::AccessPermissions::ReadOnly, cm7::mpu::AccessPermissions::ReadOnly);
+	cm7::mpu::set_region_custom_attributes(cm7::mpu::CachePolicy::WriteThroughNoAlloc, cm7::mpu::CachePolicy::WriteThroughNoAlloc);
+	cm7::mpu::set_region_shareable(false);
+	cm7::mpu::set_region_size(cm7::mpu::SIZE_128KB);
+	// DTCM: No Cache, ReadWrite NoExec, 512KB
+	cm7::mpu::set_region_address(2, 0x2000_0000);
+	cm7::mpu::set_region_access(false, cm7::mpu::AccessPermissions::ReadWrite, cm7::mpu::AccessPermissions::ReadWrite);
+	cm7::mpu::set_region_custom_attributes(cm7::mpu::CachePolicy::None, cm7::mpu::CachePolicy::None);
+	cm7::mpu::set_region_shareable(false);
+	cm7::mpu::set_region_size(cm7::mpu::SIZE_512KB);
+	// RAM (AXI bus): Write Back With Alloc, ReadWrite, 1MB
+	cm7::mpu::set_region_address(3, 0x2020_0000);
+	cm7::mpu::set_region_access(false, cm7::mpu::AccessPermissions::ReadWrite, cm7::mpu::AccessPermissions::ReadWrite);
+	cm7::mpu::set_region_custom_attributes(cm7::mpu::CachePolicy::WriteBackAlloc, cm7::mpu::CachePolicy::WriteBackAlloc);
+	cm7::mpu::set_region_shareable(false);
+	cm7::mpu::set_region_size(cm7::mpu::SIZE_1MB);
+	// Peripherals: Device NonShared, ReadWrite NoExec, 64MB
+	cm7::mpu::set_region_address(4, 0x4000_0000);
+	cm7::mpu::set_region_access(false, cm7::mpu::AccessPermissions::ReadWrite, cm7::mpu::AccessPermissions::ReadWrite);
+	cm7::mpu::set_region_attributes(cm7::mpu::MemoryType::DeviceNonShared, cm7::mpu::CachePolicy::None);
+	cm7::mpu::set_region_shareable(false);
+	cm7::mpu::set_region_size(cm7::mpu::SIZE_64MB);
+	// QSPI Flash: Write Back With Alloc, ReadOnly, 16MB
+	cm7::mpu::set_region_address(5, 0x6000_0000);
+	cm7::mpu::set_region_access(true, cm7::mpu::AccessPermissions::ReadOnly, cm7::mpu::AccessPermissions::ReadOnly);
+	cm7::mpu::set_region_custom_attributes(cm7::mpu::CachePolicy::WriteBackAlloc, cm7::mpu::CachePolicy::WriteBackAlloc);
+	cm7::mpu::set_region_shareable(false);
+	cm7::mpu::set_region_size(cm7::mpu::SIZE_16MB);
+	// Trap Null Pointer Deref
+	cm7::mpu::set_region_address(6, 0x0000_0000);
+	cm7::mpu::set_region_access(false, cm7::mpu::AccessPermissions::None, cm7::mpu::AccessPermissions::None);
+	cm7::mpu::set_region_custom_attributes(cm7::mpu::CachePolicy::None, cm7::mpu::CachePolicy::None);
+	cm7::mpu::set_region_shareable(false);
+	cm7::mpu::set_region_size(cm7::mpu::SIZE_32B);
+	// Trap Stack Overflow
+	cm7::mpu::set_region_address(7, _BSS_END - 32);
+	cm7::mpu::set_region_access(false, cm7::mpu::AccessPermissions::None, cm7::mpu::AccessPermissions::None);
+	cm7::mpu::set_region_custom_attributes(cm7::mpu::CachePolicy::None, cm7::mpu::CachePolicy::None);
+	cm7::mpu::set_region_shareable(false);
+	cm7::mpu::set_region_size(cm7::mpu::SIZE_32B);
+	// Enable MPU
+	cm7::mpu::enable();
 
 	// Cortex-M7: Enable L1 Cache
 	cm7::cache::enable();
 
-
+	// Cortex-M7: Configure SysTick
 
 
 
